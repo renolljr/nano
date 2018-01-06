@@ -26,7 +26,7 @@ class App extends React.Component {
   }
 
   updateSearchQuery = (query) => {
-    this.setState({ query: query ? query.trim() : '' })
+    this.setState({ query: query ? query : '' })
   }
   //invoke componentDidMount() to perform ajax request 
   componentDidMount(){
@@ -34,23 +34,26 @@ class App extends React.Component {
   }
 
   search = (query) => {
-    this.updateSearchQuery(query);
     const maxResults = 100;
+    this.updateSearchQuery(query);
     if(query && query.length > 1){
       let cabinet = this.state.books;
       BooksAPI.search(query,maxResults).then((results)=>{
-        let searchResults = results.map(function(result){
-          let index = cabinet.findIndex(i => i.id === result.id)
-          if(index !== -1){
-            return cabinet[index]
-          } else {
-            return result
-          }
-        });
-        if(searchResults && searchResults.length >1){
+        if(results && results.length>1){
+          let searchResults = results.map(function(result){
+            let index = cabinet.findIndex(i => i.id === result.id)
+            if(index !== -1){
+              return cabinet[index]
+            } else {
+              result.shelf = 'none';
+              return result
+            }
+          });
+          if(searchResults && searchResults.length >1){
             this.setState({searchResults})
-        }else{
-          this.setState({searchResults:[]})
+          }else{
+            this.setState({searchResults:[]})
+          }
         }
       });
     }

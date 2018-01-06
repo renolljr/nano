@@ -9,13 +9,13 @@ class Book extends Component{
                {book.imageLinks && (
                    <div className="book-cover" style={{ width: 128, height: 193,  backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>    
                )}
-              {!book.imageLinks && (
+               {!book.imageLinks && (
                    <div className="book-cover" style={{ width: 128, height: 193 }}></div>    
                )}
 
               <div className="book-shelf-changer">
                 <select value={section} onChange={(event) => this.props.onUpdate(book, event.target.value)}>
-                  <option value="none" disabled>Move to...</option>
+                  <option value="title" disabled>Move to...</option>
                   <option value="currentlyReading">Currently Reading</option>
                   <option value="wantToRead">Want to Read</option>
                   <option value="read">Read</option>
