@@ -11,3 +11,7 @@ to get the latest dependencies and then run
 
 to start the application.  
 
+Alternatively, if using yarn.
+### 'yarn install'
+### 'yarn upgrade --latest'
+### 'yarn start'
