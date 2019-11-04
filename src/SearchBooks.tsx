@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
 import Book from './Book'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { searchBooksProps } from './types';
 
-class SearchBooks extends Component{
+class SearchBooks extends Component<searchBooksProps>{
     //get state
     render(){
-        //query={this.state.query} books={this.state.books} onUpdate={this.update} search={this.search}
         let{query,books,update,search} = this.props;
         return(
             <div className="search-books">
@@ -16,12 +16,14 @@ class SearchBooks extends Component{
               </div>
             </div>
             {books.length > 1 && (
-              
                <div className="search-books-results">
                <ol className="books-grid">
                 { books.map((book) => (
                      <li key={book.id}>
-                        <Book onUpdate={update} book={book} section={book.shelf ? book.shelf : 'none'}/>
+                        <Book 
+                            onUpdate={update}
+                            book={book} 
+                            shelf={book.shelf ? book.shelf : 'none'}/>
                      </li>)
                      )
                 }
@@ -32,9 +34,5 @@ class SearchBooks extends Component{
           </div>
       )
     }
-   
 }
-
-
-
 export default SearchBooks

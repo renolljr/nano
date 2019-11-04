@@ -2,8 +2,9 @@
 import React  from 'react';
 import { Link } from 'react-router-dom'
 import Book from './Book'
+import { listBooksProps } from './types';
 
-class ListBooks extends React.Component{
+class ListBooks extends React.Component<listBooksProps>{
     render(){
         let {books, sections} = this.props
         return (
@@ -20,7 +21,10 @@ class ListBooks extends React.Component{
                      <ol className="books-grid">
                      { books.filter( book => book.shelf === section.id).map((book) => (
                        <li key={book.id}>
-                          <Book onUpdate={this.props.onUpdate} book={book} section={section.id}/>
+                          <Book 
+                              onUpdate={this.props.onUpdate}
+                              book={book}
+                              shelf={section.id}/>
                        </li>))}
                        </ol>
                      </div>
@@ -36,6 +40,5 @@ class ListBooks extends React.Component{
     }
 
 }
-
 
 export default ListBooks

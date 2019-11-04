@@ -4,15 +4,21 @@ import './App.css'
 import {Route} from 'react-router-dom'
 import SearchBooks from "./SearchBooks"
 import ListBooks from './ListBooks'
+import { appProps,appState, books, book } from './types'
 
-class App extends React.Component {
-  state = {
-    books:[],
+class App extends React.Component<appProps, appState> {
+  state:appState = {
+    books: [],
     query:"",
     searchResults:[],
     sectionIDs:[{id:"currentlyReading", title:"Currently Reading"},
                 {id:"wantToRead", title:"Want to Read"},
                 {id:"read", title:"Read"}],
+  }
+
+  //invoke componentDidMount() to perform ajax request 
+  componentDidMount(){
+    this.loadBooks();
   }
 
   loadBooks = () => {
@@ -25,22 +31,20 @@ class App extends React.Component {
     this.setState({ query: '' })
   }
 
-  updateSearchQuery = (query) => {
+  updateSearchQuery = (query:string) => {
     this.setState({ query: query ? query : '' })
   }
-  //invoke componentDidMount() to perform ajax request 
-  componentDidMount(){
-    this.loadBooks();
-  }
 
-  search = (query) => {
-    const maxResults = 100;
+  search = (query:string) => {
+    const searchLimit:number = 100;
     this.updateSearchQuery(query);
-    if(query && query.length > 1){
+    let searchCriteria = query && query.length > 1;
+    if(searchCriteria){
       let cabinet = this.state.books;
-      BooksAPI.search(query,maxResults).then((results)=>{
-        if(results && results.length>1){
-          let searchResults = results.map(function(result){
+      BooksAPI.search(query, searchLimit).then((results:books)=>{
+        let hasResults = results && results.length>1;
+        if(hasResults){
+          let searchResults = results.map(function(result:book){
             let index = cabinet.findIndex(i => i.id === result.id)
             if(index !== -1){
               return cabinet[index]
@@ -62,7 +66,7 @@ class App extends React.Component {
     }
   };
 
-  update = (book,shelf) =>{
+  update = (book:book,shelf:string) =>{
     BooksAPI.update(book,shelf).then(()=>{
       this.loadBooks();
       this.search(this.props.query);
@@ -73,10 +77,17 @@ class App extends React.Component {
     return (
       <div className="app">
         <Route exact path='/' render={()=>(
-          <ListBooks books={this.state.books} sections={this.state.sectionIDs} onUpdate={this.update}/>
+          <ListBooks 
+              books={this.state.books}
+              sections={this.state.sectionIDs} 
+              onUpdate={this.update}/>
         )}/>
         <Route exact path="/search" render={(history)=>(
-          <SearchBooks query={this.state.query} books={this.state.searchResults} update={this.update} search={this.search}/>
+          <SearchBooks 
+              query={this.state.query}
+              books={this.state.searchResults}
+              update={this.update}
+              search={this.search}/>
         )}/>
         )
       </div>
