@@ -5,7 +5,7 @@ import { searchBooksProps } from './types';
 
 
 function SearchBooks(props:searchBooksProps){
-  let{query,books,update,search} = props;
+  let{query,books,onUpdate,search} = props;
   return(
       <div className="search-books">
       <div className="search-books-bar">
@@ -20,7 +20,7 @@ function SearchBooks(props:searchBooksProps){
           { books.map((book) => (
                <li key={book.id}>
                   <Book 
-                      onUpdate={update}
+                      onUpdate={onUpdate}
                       book={book} 
                       shelf={book.shelf ? book.shelf : 'none'}/>
                </li>)
