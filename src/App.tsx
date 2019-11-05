@@ -1,46 +1,44 @@
-import React from 'react'
-import * as BooksAPI from './BooksAPI'
 import './App.css'
+import React, { useState, useEffect } from 'react'
+import * as BooksAPI from './BooksAPI'
 import {Route} from 'react-router-dom'
 import SearchBooks from "./SearchBooks"
 import ListBooks from './ListBooks'
-import { appProps,appState, books, book } from './types'
+import { appProps,books, book } from './types'
 
-class App extends React.Component<appProps, appState> {
-  state:appState = {
-    books: [],
-    query:"",
-    searchResults:[],
-    sectionIDs:[{id:"currentlyReading", title:"Currently Reading"},
-                {id:"wantToRead", title:"Want to Read"},
-                {id:"read", title:"Read"}],
-  }
+const App:React.FC<appProps> = (props:appProps) => {
+  const[books, setBooks] = useState<books>([]);
+  const[query, setQuery] = useState<string>("");
+  const[searchResults, setSearchResults] = useState<books>([]);
+  const[sectionIDs] = useState([{id:"currentlyReading", title:"Currently Reading"},
+            {id:"wantToRead", title:"Want to Read"},
+            {id:"read", title:"Read"}])
 
-  //invoke componentDidMount() to perform ajax request 
-  componentDidMount(){
-    this.loadBooks();
-  }
-
-  loadBooks = () => {
+  function loadBooks(){
     BooksAPI.getAll().then((books)=> {
-      this.setState({books})
+      setBooks(books);
     });
   }
 
-  clearSearchQuery = () => {
-    this.setState({ query: '' })
+  function clearSearchQuery(){
+    setQuery(''); 
   }
 
-  updateSearchQuery = (query:string) => {
-    this.setState({ query: query ? query : '' })
+  function updateSearchQuery(query:string){
+    query ? setQuery(query) : clearSearchQuery();
   }
 
-  search = (query:string) => {
+  useEffect(()=>{  //equivalent to componentDidMount(), on component rerender
+    loadBooks();
+  })
+
+  const search = (query:string) => {
     const searchLimit:number = 100;
-    this.updateSearchQuery(query);
+    updateSearchQuery(query);
+
     let searchCriteria = query && query.length > 1;
     if(searchCriteria){
-      let cabinet = this.state.books;
+      let cabinet = books;
       BooksAPI.search(query, searchLimit).then((results:books)=>{
         let hasResults = results && results.length>1;
         if(hasResults){
@@ -54,44 +52,42 @@ class App extends React.Component<appProps, appState> {
             }
           });
           if(searchResults && searchResults.length >1){
-            this.setState({searchResults})
+            setSearchResults(searchResults);
           }else{
-            this.setState({searchResults:[]})
+            setSearchResults([]);
           }
         }
       });
     }
     else{
-      this.setState({searchResults:[]})
+      setSearchResults([]);
     }
   };
 
-  update = (book:book,shelf:string) =>{
+  const update = (book:book,shelf:string) =>{
     BooksAPI.update(book,shelf).then(()=>{
-      this.loadBooks();
-      this.search(this.props.query);
+      loadBooks();
+      search(props.query);
     })
   };
 
-  render() {
-    return (
-      <div className="app">
-        <Route exact path='/' render={()=>(
-          <ListBooks 
-              books={this.state.books}
-              sections={this.state.sectionIDs} 
-              onUpdate={this.update}/>
-        )}/>
-        <Route exact path="/search" render={(history)=>(
-          <SearchBooks 
-              query={this.state.query}
-              books={this.state.searchResults}
-              update={this.update}
-              search={this.search}/>
-        )}/>
-        )
-      </div>
-    )
-  }
+  return (
+    <div className="app">
+      <Route exact path='/' render={()=>(
+        <ListBooks 
+            books={books}
+            sections={sectionIDs} 
+            onUpdate={update}/>
+      )}/>
+      <Route exact path="/search" render={()=>(
+        <SearchBooks 
+            query={query}
+            books={searchResults}
+            update={update}
+            search={search}/>
+      )}/>
+      )
+    </div>
+  )
 }
 export default App
