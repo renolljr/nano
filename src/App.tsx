@@ -83,7 +83,7 @@ const App:React.FC<appProps> = (props:appProps) => {
         <SearchBooks 
             query={query}
             books={searchResults}
-            update={update}
+            onUpdate={update}
             search={search}/>
       )}/>
       )

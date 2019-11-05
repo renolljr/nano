@@ -20,10 +20,9 @@ export interface listBooksProps extends updateBook{
   sections: sectionID[]
 }
 
-export interface searchBooksProps extends searchBook{
+export interface searchBooksProps extends searchBook, updateBook{
   query: string,
-  books: books,
-  update: (book:book, shelf:string) => void
+  books: books
 }
 
 export type books = book[];
